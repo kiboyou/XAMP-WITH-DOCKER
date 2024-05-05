@@ -1,0 +1,40 @@
+services:
+  webserver:
+    container_name: WEBSERVER-APACHE
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./www:/var/www/html
+    ports:
+      - 8005:80
+    depends_on:
+      - mysql-db
+    networks:
+      - xampp-network
+
+  mysql-db:
+    container_name: DATABASE-MYSQL
+    image: mysql:8.0
+    #include the file with the environment variables 
+    env_file: ./config/.env
+    ports:
+      - "3306:3306"
+    networks:
+      - xampp-network
+
+  phpmyadmin:
+    container_name: PHP-ADMIN
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mysql-db
+    ports:
+      - "8081:80"
+    #include the file with the environment variables 
+    env_file: ./config/.env
+    networks:
+      - xampp-network
+
+networks:
+  xampp-network:
+    driver: bridge
